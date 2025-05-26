@@ -1,19 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams} from 'react-router-dom';
 import CinemaHall from '../components/CinemaHall/CinemaHall.jsx';
 import { movies } from '../data/movies';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function Booking() {
     const { id } = useParams();
     const [movie, setMovie] = useState(null);
-    const [selectedSeats, setSelectedSeats] = useState([]);
+    const [seats, setSeats] = useState([]);
+    const [form, setForm] = useState({ name: '', phone: '', email: '' });
 
     useEffect(() => {
         if (id) {
             const foundMovie = movies.find(m => m.id === parseInt(id) || m.id === id);
             setMovie(foundMovie);
+
+            const stored = localStorage.getItem(`bookings_${id}`);
+            const bookedSeats = stored ? JSON.parse(stored) : [];
+            const initialSeats = Array.from({ length: 50 }, (_, i) => {
+                const seatId = i + 1;
+                return {
+                    id: seatId,
+                    selected: false,
+                    booked: bookedSeats.includes(seatId),
+                };
+            });
+            setSeats(initialSeats);
         }
     }, [id]);
+
+    function handleInputChange(e) {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    function handleBooking() {
+        const { name, phone, email } = form;
+
+        if (!name || !phone || !email || !seats.some(seat => seat.selected)) {
+            toast.error('Будь ласка, заповніть всі поля та виберіть місця');
+            return;
+        }
+
+        const updatedSeats = seats.map(seat =>
+            seat.selected ? { ...seat, selected: false, booked: true } : seat
+        );
+        setSeats(updatedSeats);
+
+        const booked = updatedSeats.filter(seat => seat.booked).map(seat => seat.id);
+        localStorage.setItem(`bookings_${id}`, JSON.stringify(booked));
+
+        toast.success('Бронювання успішне!');
+
+        setForm({ name: '', phone: '', email: '' });
+    };
 
     if (!movie) {
         return (
@@ -26,6 +67,7 @@ export default function Booking() {
     return (
         <div className="min-h-screen bg-gray-900 py-8">
             <div className="container mx-auto px-4">
+                <ToastContainer />
                 <header className="mb-8">
                     <h1 className="text-3xl font-bold text-pink-500 mb-2">{movie.title}</h1>
                     <div className="flex gap-4 text-gray-400">
@@ -35,9 +77,9 @@ export default function Booking() {
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-1 w-4/5
-                    ">
-                        <img
+                    <div className="lg:col-span-1 w-full max-w-xs mx-auto">
+
+                    <img
                             src={movie.posterUrl}
                             alt={movie.title}
                             className="w-full h-auto rounded-lg shadow-lg"
@@ -48,32 +90,39 @@ export default function Booking() {
                         </div>
                     </div>
 
-                    <div className="lg:col-span-2">
-                        <CinemaHall selectedSeats={selectedSeats} setSelectedSeats={setSelectedSeats}/>
+                    <div className="lg:col-span-2 flex flex-col items-center">
+                        <CinemaHall seats={seats} setSeats={setSeats} />
 
-                        <div className="bg-gray-800 p-4 rounded-lg mt-4">
+                        <div className="bg-gray-800 p-4 rounded-lg mt-4 w-full">
                             <h2 className="text-lg text-pink-400 font-semibold mb-4">Введіть дані для бронювання</h2>
-                            <div className="grid gap-4">
+                            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                                 <input
                                     type="text"
                                     name="name"
+                                    value={form.name}
+                                    onChange={handleInputChange}
                                     placeholder="Ім'я"
                                     className="px-4 py-2 rounded bg-gray-900 border border-gray-700 text-white"
                                 />
                                 <input
                                     type="tel"
                                     name="phone"
+                                    value={form.phone}
+                                    onChange={handleInputChange}
                                     placeholder="Телефон"
                                     className="px-4 py-2 rounded bg-gray-900 border border-gray-700 text-white"
                                 />
                                 <input
                                     type="email"
                                     name="email"
+                                    value={form.email}
+                                    onChange={handleInputChange}
                                     placeholder="Email"
                                     className="px-4 py-2 rounded bg-gray-900 border border-gray-700 text-white"
                                 />
                                 <button
-                                    className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md transition-colors duration-300"
+                                    onClick={handleBooking}
+                                    className="cursor-pointer bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md transition-colors duration-300"
                                 >
                                     Підтвердити бронювання
                                 </button>
