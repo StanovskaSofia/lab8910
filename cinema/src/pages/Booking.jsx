@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CinemaHall from '../components/CinemaHall/CinemaHall.jsx';
 import { movies } from '../data/movies';
 import { toast, ToastContainer } from 'react-toastify';
@@ -11,6 +11,7 @@ export default function Booking() {
     const [movie, setMovie] = useState(null);
     const [seats, setSeats] = useState([]);
     const [form, setForm] = useState({ name: '', phone: '', email: '' });
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (id) {
@@ -68,7 +69,15 @@ export default function Booking() {
         <div className="min-h-screen bg-gray-900 py-8">
             <div className="container mx-auto px-4">
                 <ToastContainer />
+                <button
+                    onClick={() => navigate('/')}
+                    className="cursor-pointer pb-[8px] fixed top-6 left-6 z-50 bg-pink-600 hover:bg-pink-700 text-white w-14 h-14 rounded-full
+                     flex items-center justify-center shadow-lg transition-all duration-300"
+                >
+                    <span className="text-4xl text-bold">&larr;</span>
+                </button>
                 <header className="mb-8">
+
                     <h1 className="text-3xl font-bold text-pink-500 mb-2">{movie.title}</h1>
                     <div className="flex gap-4 text-gray-400">
                         <span>{movie.genre}</span>
