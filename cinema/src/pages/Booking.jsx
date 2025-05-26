@@ -39,8 +39,27 @@ export default function Booking() {
     function handleBooking() {
         const { name, phone, email } = form;
 
-        if (!name || !phone || !email || !seats.some(seat => seat.selected)) {
-            toast.error('Будь ласка, заповніть всі поля та виберіть місця');
+        const nameRegex = /^[a-zA-Zа-яА-ЯіІїЇєЄґҐ'-]+\s+[a-zA-Zа-яА-ЯіІїЇєЄґҐ'-]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\d{10,15}$/;
+
+        if (!nameRegex.test(name)) {
+            toast.error("Введіть ваше ім'я та прізвище");
+            return;
+        }
+
+        if (!phoneRegex.test(phone)) {
+            toast.error("Введіть коректний номер телефону");
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            toast.error("Введіть коректну електронну адресу");
+            return;
+        }
+
+        if (!seats.some(seat => seat.selected)) {
+            toast.error("Будь ласка, виберіть хоча б одне місце");
             return;
         }
 
@@ -55,7 +74,7 @@ export default function Booking() {
         toast.success('Бронювання успішне!');
 
         setForm({ name: '', phone: '', email: '' });
-    };
+    }
 
     if (!movie) {
         return (
