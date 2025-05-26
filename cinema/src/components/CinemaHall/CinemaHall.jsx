@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
 
-export default function CinemaHall() {
-
-    const [selectedSeats, setSelectedSeats] = useState([]);
-
+export default function CinemaHall({ selectedSeats, setSelectedSeats }) {
     const totalSeats = 50;
 
-    function toggleSeat(seatNumber)  {
-        const seatId = seatNumber;
-        const isSeatSelected = selectedSeats.includes(seatId);
-
-        if (isSeatSelected) {
-            setSelectedSeats(selectedSeats.filter(id => id !== seatId));
+    function toggleSeat(seatNumber) {
+        if (selectedSeats.includes(seatNumber)) {
+            setSelectedSeats(selectedSeats.filter(id => id !== seatNumber));
         } else {
-            setSelectedSeats([...selectedSeats, seatId]);
+            setSelectedSeats([...selectedSeats, seatNumber]);
         }
     }
 
@@ -21,8 +15,6 @@ export default function CinemaHall() {
         const seats = [];
 
         for (let i = 1; i <= totalSeats; i++) {
-
-
             const isSelected = selectedSeats.includes(i);
 
             seats.push(

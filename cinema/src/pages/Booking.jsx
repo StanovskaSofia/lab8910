@@ -6,6 +6,7 @@ import { movies } from '../data/movies';
 export default function Booking() {
     const { id } = useParams();
     const [movie, setMovie] = useState(null);
+    const [selectedSeats, setSelectedSeats] = useState([]);
 
     useEffect(() => {
         if (id) {
@@ -48,12 +49,35 @@ export default function Booking() {
                     </div>
 
                     <div className="lg:col-span-2">
-                        <CinemaHall />
+                        <CinemaHall selectedSeats={selectedSeats} setSelectedSeats={setSelectedSeats}/>
 
-                        <div className="mt-4 flex justify-end">
-                            <button className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md transition-colors duration-300">
-                                Підтвердити бронювання
-                            </button>
+                        <div className="bg-gray-800 p-4 rounded-lg mt-4">
+                            <h2 className="text-lg text-pink-400 font-semibold mb-4">Введіть дані для бронювання</h2>
+                            <div className="grid gap-4">
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Ім'я"
+                                    className="px-4 py-2 rounded bg-gray-900 border border-gray-700 text-white"
+                                />
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    placeholder="Телефон"
+                                    className="px-4 py-2 rounded bg-gray-900 border border-gray-700 text-white"
+                                />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    className="px-4 py-2 rounded bg-gray-900 border border-gray-700 text-white"
+                                />
+                                <button
+                                    className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md transition-colors duration-300"
+                                >
+                                    Підтвердити бронювання
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
